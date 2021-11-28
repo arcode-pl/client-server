@@ -10,6 +10,7 @@
 #include <arpa/inet.h>
 #include <time.h>
 #include <stdbool.h>
+#include <curses.h>
 #include "dto.h"
 
 typedef struct
@@ -29,7 +30,7 @@ static int client_init(client_t *ctx, char *ip)
     int conn_sd;
     if ((conn_sd = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
-        printf("\n Error : Could not create socket \n");
+        printf("Error: Could not create socket \r\n");
         return -1;
     }
 
@@ -40,14 +41,16 @@ static int client_init(client_t *ctx, char *ip)
     ctx->serv_addr.sin_port = htons(PORT_ADDRESS);
     if (inet_pton(AF_INET, ip, &(ctx->serv_addr.sin_addr)) <= 0)
     {
-        printf("\n inet_pton error occured\n");
+        printf("Error: in inet_pton invocation \r\n");
+        close(conn_sd);
         return -1;
     }
 
     /* CONNECT */
     if (connect(conn_sd, (struct sockaddr *)&(ctx->serv_addr), ctx->sock_len) < 0)
     {
-        printf("\n Error : Connect Failed \n");
+        printf("Error: Connect Failed \r\n");
+        close(conn_sd);
         return -1;
     }
 
@@ -118,13 +121,20 @@ static void client_ping(client_t *ctx)
     {
         if (dto.data[0] == (random + 1))
         {
-            printf("Received valid ping from server\n\n");
+            printf("Received valid ping from server \r\n");
         }
     }
 }
 
 static void initialize(void)
 {
+    initscr();
+    clear();
+    noecho();
+    nodelay(stdscr, TRUE);
+    cbreak();
+    timeout(1000);
+
     srand(time(NULL));
     memset(&client, 0, sizeof(client_t));
     client.client_sd = 0;
@@ -153,15 +163,16 @@ static inline bool isConnected(client_t *ctx)
 
 int main(int argc, char *argv[])
 {
+    int ch;
     initialize();
 
     if (argc != 2)
     {
-        printf("\n Usage: %s <ip of server> \n", argv[0]);
+        printf("Usage: %s <ip of server> \r\n", argv[0]);
         return 1;
     }
 
-    while (1)
+    while ((ch = getch()) != 27)
     {
         /* TRY CONNECT */
         if (!isCreated(&client))
@@ -183,6 +194,13 @@ int main(int argc, char *argv[])
 
         usleep(100000);
     }
+
+    if (client.client_sd > 0)
+    {
+        close(client.client_sd);
+    }
+
+    endwin();
 
     return 0;
 }

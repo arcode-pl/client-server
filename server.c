@@ -151,6 +151,10 @@ void server_close(server_t *ctx)
             close(ctx->clients_sd[i]);
         }
     }
+    if (ctx->server_sd > 0)
+    {
+        close(ctx->server_sd);
+    }
 }
 
 void server_ping(server_t *ctx)
@@ -169,11 +173,8 @@ void server_ping(server_t *ctx)
     }
 }
 
-int main(int argc, char *argv[])
+void initialize(void)
 {
-    int ch;
-    int i = 0;
-
     initscr();
     clear();
     noecho();
@@ -182,6 +183,13 @@ int main(int argc, char *argv[])
     timeout(1000);
 
     memset(&server, 0, sizeof(server_t));
+}
+
+int main(int argc, char *argv[])
+{
+    int ch;
+
+    initialize();
     server_init(&server);
 
     while ((ch = getch()) != 27)
