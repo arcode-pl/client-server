@@ -1,5 +1,5 @@
 # client-server
-- this is client-server sockets communication written in C
+This is client-server sockets communication written in C
 
 #Installation (Ubuntu 20.04)
 - sudo apt-get install build-essential
