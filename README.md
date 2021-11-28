@@ -16,4 +16,4 @@ This is client-server sockets communication written in C
 
 #Clients (up to 10)
 - ./client 127.0.0.1 for run
-- Ctrl+C for close
+- ctrl+c for close
