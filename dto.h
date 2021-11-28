@@ -4,6 +4,7 @@
 #define PORT_ADDRESS 8888
 #define SERVER_ADDRESS "127.0.0.1"
 
+#define UNSET_ID -2
 #define SERVER_ID -1
 #define MAX_DATA_LEN 256
 #define MAX_DATA_SIZE (MAX_DATA_LEN * 4)
@@ -25,7 +26,7 @@ typedef struct dto
 } dto_t;
 
 void common_print(dto_t *dto);
-void common_write(int sd, dto_t *dto);
-void common_read(int sd, dto_t *dto);
+int common_write(int *sd, dto_t *dto);
+int common_read(int *sd, dto_t *dto);
 
 #endif

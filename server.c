@@ -1,4 +1,5 @@
 #include <sys/socket.h>
+#include <sys/time.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <stdio.h>
@@ -118,12 +119,23 @@ int server_listen(server_t *ctx, int timeout_ms)
                 }
             }
 
+            // send data timestamp and assignment information
             ticks = time(NULL);
             snprintf((char *)&(dto.data), sizeof(dto.data), "%.24s\r\n", ctime(&ticks));
             dto.len = strlen((char *)&(dto.data));
+            int res = common_write(&client_sd, &dto);
 
-            // REPLY TO NEWLY CONNECTED CLIENT WITH TRUE OR FALSE
-            common_write(client_sd, &dto);
+            // clear socket descriptior if fail
+            if (res != 0)
+            {
+                ctx->clients_sd[dto.id] = 0; //mark as unuset when write fail and on list
+            }
+
+            // close connection if max clients reached
+            if (res == 0 && dto.id < 0)
+            {
+                close(ctx->clients_sd[dto.id]);
+            }
         }
     }
 
@@ -147,10 +159,12 @@ void server_ping(server_t *ctx)
     {
         if (ctx->clients_sd[i] != 0)
         {
-            common_read(ctx->clients_sd[i], &dto);
-            dto.id = SERVER_ID;
-            dto.data[0] = dto.data[0] + 1;
-            common_write(ctx->clients_sd[i], &dto);
+            if (common_read(&(ctx->clients_sd[i]), &dto) == 0)
+            {
+                dto.id = SERVER_ID;
+                dto.data[0] = dto.data[0] + 1;
+                common_write(&(ctx->clients_sd[i]), &dto);
+            }
         }
     }
 }

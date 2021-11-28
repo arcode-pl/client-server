@@ -33,26 +33,48 @@ void common_print(dto_t *dto)
     }
 }
 
-void common_read(int sd, dto_t *dto)
+int common_read(int *sd, dto_t *dto)
 {
-    int bytes = read(sd, (char *)dto, sizeof(dto_t));
+    if (*sd <= 0)
+    {
+        printf("Read: Socket is not initialized\r\n");
+        return -1;
+    }
+
+    int bytes = read(*sd, (char *)dto, sizeof(dto_t));
     //printf("readed %d bytes\r\n", bytes);
     //common_print(dto);
 
     if (bytes != sizeof(dto_t))
     {
-        printf("\n Read error \n");
+        printf("Read: error, close socket\r\n");
+        close(*sd);
+        *sd = 0;
+        return -1;
     }
+
+    return 0;
 }
 
-void common_write(int sd, dto_t *dto)
+int common_write(int *sd, dto_t *dto)
 {
-    int bytes = write(sd, (char *)dto, sizeof(dto_t));
+    if (*sd <= 0)
+    {
+        printf("Write: Socket is not initialized\r\n");
+        return -1;
+    }
+
+    int bytes = write(*sd, (char *)dto, sizeof(dto_t));
     //printf("writed %d bytes\r\n", bytes);
     //common_print(dto);
 
     if (bytes != sizeof(dto_t))
     {
-        printf("\n Write error \n");
+        printf("Write: error, close socket\r\n");
+        close(*sd);
+        *sd = 0;
+        return -1;
     }
+
+    return 0;
 }
