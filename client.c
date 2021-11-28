@@ -118,7 +118,7 @@ static void client_ping(client_t *ctx)
     {
         if (dto.data[0] == (random + 1))
         {
-            printf("Received valid ping from server\n");
+            printf("Received valid ping from server\n\n");
         }
     }
 }
@@ -166,14 +166,12 @@ int main(int argc, char *argv[])
         /* TRY CONNECT */
         if (!isCreated(&client))
         {
-            printf("init\r\n");
             client_init(&client, argv[1]);
         }
 
         /* TRY ASSIGN */
         if (isCreated(&client) && !isAssigned(&client))
         {
-            printf("assign\r\n");
             client_assign(&client);
         }
 

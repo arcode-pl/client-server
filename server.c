@@ -134,7 +134,7 @@ int server_listen(server_t *ctx, int timeout_ms)
             // close connection if max clients reached
             if (res == 0 && dto.id < 0)
             {
-                close(ctx->clients_sd[dto.id]);
+                close(client_sd);
             }
         }
     }
