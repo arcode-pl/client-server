@@ -15,5 +15,7 @@ This is client-server sockets communication written in C
 - server handling upto 10 client instances
 
 #Clients (up to 10)
-- ./client 127.0.0.1 for run
-- ctrl+c for close
+- ./client 127.0.0.1 or ./run_client.sh for run
+- close app by press ESC to propertly close socket
+
+PS: Tested on 10 clients and one server without issues.
